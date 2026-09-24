@@ -1,0 +1,12 @@
+{
+  "name": "Écho",
+  "short_name": "Écho",
+  "description": "Le lien accessible entre écoles et familles au Bénin.",
+  "start_url": "/feed",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#124c2c",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

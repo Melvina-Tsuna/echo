@@ -1,0 +1,79 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --bg: #f7f5f0;
+  --surface: #ffffff;
+  --surface-2: #f0ede4;
+  --border: #e2ddd0;
+  --text: #241f18;
+  --text-muted: #6b6455;
+  --brand-50: #eaf3ec;
+  --brand-100: #cfe4d4;
+  --brand-600: #1f6b45;
+  --brand-700: #164f34;
+  --brand-ink: #ffffff;
+  --amber-bg: #fbedcf;
+  --amber-text: #6b4c14;
+  --danger: #b3432f;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --bg: #14120e;
+    --surface: #1d1a14;
+    --surface-2: #262219;
+    --border: #37311f;
+    --text: #f2ede1;
+    --text-muted: #a89f8a;
+    --brand-50: #1c2b21;
+    --brand-100: #234030;
+    --brand-600: #4f9c72;
+    --brand-700: #6fb98d;
+    --brand-ink: #0c1a12;
+    --amber-bg: #3a2c10;
+    --amber-text: #f0c987;
+    --danger: #e08066;
+  }
+}
+
+html {
+  font-size: 18px; /* base plus grande pour lisibilité, ajustable via le bouton A+ */
+}
+
+body {
+  @apply bg-bg text-ink font-sans;
+}
+
+h1, h2, h3 {
+  @apply font-serif;
+  text-wrap: balance;
+}
+
+/* Focus visible clair pour la navigation clavier */
+:focus-visible {
+  outline: 3px solid var(--brand-600);
+  outline-offset: 2px;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  background: var(--brand-700);
+  color: var(--brand-ink);
+  padding: 0.75rem 1rem;
+  z-index: 100;
+}
+.skip-link:focus {
+  left: 0.5rem;
+  top: 0.5rem;
+}
+
+.big-text {
+  font-size: 1.35rem;
+  line-height: 1.6;
+}
