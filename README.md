@@ -27,8 +27,22 @@ Trois niveaux de diffusion, une seule mécanique de publication :
 - **Structure** (ministère, ONG) → publie à l'échelle nationale/régionale
   (bourse, examen national, campagne)
 
-Chaque famille (rôle **Parent/Élève**) voit un fil filtré : les messages de
-sa classe, de son école, et les messages nationaux.
+Chaque famille (rôle **Parent**) voit un fil filtré : les messages des
+classes et écoles de tous ses enfants, et les messages nationaux.
+
+## Parcours d'inscription
+
+L'accueil tranche le rôle dès la première étape avec 3 parcours dédiés,
+chacun avec uniquement les champs pertinents :
+
+- **Famille** (`/signup/famille`) : un compte parent peut déclarer
+  **plusieurs enfants**, chacun avec sa propre école et sa propre classe
+  (utile pour une fratrie répartie dans des établissements différents). Le
+  fil et les alertes de suivi agrègent alors tous les enfants du foyer.
+- **Établissement** (`/signup/etablissement`) : enseignant (rattaché à une
+  classe) ou école (rattachée à un établissement).
+- **Structure** (`/signup/structure`) : ministère, ONG — publication
+  nationale/régionale, sans école/classe à renseigner.
 
 ## Accessibilité
 
@@ -37,10 +51,36 @@ sa classe, de son école, et les messages nationaux.
 - Bouton d'écoute sur chaque message : lit une note vocale humaine si elle
   existe, sinon utilise la synthèse vocale du navigateur → accessible aux
   personnes malvoyantes et peu/pas alphabétisées.
+- Accueil vocal à l'ouverture du site (`VoiceWelcome`) : un message de
+  bienvenue est lu automatiquement via la synthèse vocale **locale** du
+  navigateur (voix installées sur l'appareil), donc sans dépendre du réseau.
+  Si le navigateur ne supporte pas la synthèse vocale, si aucune voix locale
+  n'est disponible, ou si la lecture échoue, le message s'affiche simplement
+  à l'écran à la place.
 - Pictogramme par catégorie (devoir, examen, réunion, bourse, urgence, info).
 - Mode texte agrandi et contraste élevé, activables en un clic.
 - Navigation clavier complète, lien d'évitement, attributs ARIA.
 - PWA avec mise en cache : les derniers messages restent lisibles hors ligne.
+
+Le handicap visuel est couvert en s'appuyant sur le lecteur d'écran natif du
+téléphone (TalkBack, VoiceOver) plutôt qu'en réinventant une brique
+propriétaire : chaque bouton a un intitulé visible/`aria-label` explicite
+(jamais une icône seule), donc l'app reste pilotable au lecteur d'écran
+**entièrement hors ligne**, sans dépendre d'un service de reconnaissance
+vocale. Le handicap auditif est couvert par le texte systématiquement
+présent (aucune information n'est disponible uniquement en audio).
+
+### Pistes d'amélioration (non retenues pour le MVP)
+
+- **Navigation par commande vocale** (dire "Famille" pour valider le bouton
+  correspondant) : rejetée pour l'instant car l'API `SpeechRecognition` du
+  navigateur envoie l'audio à un serveur distant (Google) pour le
+  reconnaître — elle ne fonctionne donc pas hors ligne, contrairement à la
+  synthèse vocale (`speechSynthesis`) qui est locale. Une vraie
+  reconnaissance vocale hors ligne nécessiterait d'embarquer un modèle en
+  local dans le navigateur (ex. Vosk ou whisper.cpp compilés en WebAssembly),
+  ce qui représente plusieurs dizaines de Mo à télécharger et une intégration
+  plus lourde à explorer après le MVP.
 
 ## Stack
 
@@ -54,8 +94,10 @@ sa classe, de son école, et les messages nationaux.
 ### 1. Créer le projet Supabase
 
 1. Sur [supabase.com](https://supabase.com), crée un nouveau projet.
-2. Dans **SQL Editor**, exécute `supabase/schema.sql` (tables, sécurité,
-   bucket de stockage).
+2. Dans **SQL Editor**, exécute dans l'ordre `supabase/schema.sql` (tables,
+   sécurité, bucket de stockage), puis `supabase/migration_children.sql`
+   (table `children` pour le multi-enfants — voir plus bas), puis
+   `supabase/migration_presence.sql` si le suivi de classe est utilisé.
 3. Crée manuellement quelques écoles, classes et liens d'écosystème dans les
    tables `schools`, `classes` et `ecosystem_links` (ou via l'interface
    Supabase Table Editor).
@@ -75,20 +117,28 @@ npm run dev
 ```
 src/
   app/
-    page.tsx          accueil
-    login/ signup/     authentification
-    feed/              fil d'actualité accessible (récepteur)
-    publish/           publication (émetteur : enseignant/école/structure)
-    ecosystem/         redirections vers les plateformes existantes
+    page.tsx                    accueil (choix du rôle)
+    login/                       authentification
+    signup/
+      famille/                   inscription famille (multi-enfants)
+      etablissement/              inscription enseignant/école
+      structure/                  inscription structure
+    feed/                        fil d'actualité accessible (récepteur)
+    publish/                     publication (émetteur : enseignant/école/structure)
+    track/                       suivi de classe (présences/notes, enseignant)
+    ecosystem/                   redirections vers les plateformes existantes
   components/
     PostCard.tsx        carte de publication accessible
     AudioButton.tsx      lecture audio (fichier ou synthèse vocale)
+    VoiceWelcome.tsx      accueil vocal à l'ouverture (avec repli texte)
     ServiceWorkerRegister.tsx
   lib/
     supabaseClient.ts
     types.ts
 supabase/
-  schema.sql            tables, RLS, stockage
+  schema.sql                  tables, RLS, stockage
+  migration_children.sql      table `children` (multi-enfants par famille)
+  migration_presence.sql      suivi présence/notes + alertes automatiques
 public/
   manifest.json, sw.js   PWA et cache hors ligne
 ```

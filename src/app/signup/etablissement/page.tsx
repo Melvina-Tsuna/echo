@@ -4,16 +4,23 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
-import { Role, ROLE_LABELS, School, SchoolClass } from "@/lib/types";
+import { School, SchoolClass } from "@/lib/types";
 
-export default function SignupPage() {
+type EtablissementRole = "teacher" | "school";
+
+const ROLE_LABELS: Record<EtablissementRole, string> = {
+  teacher: "Enseignant",
+  school: "École",
+};
+
+export default function SignupEtablissementPage() {
   const router = useRouter();
   const [schools, setSchools] = useState<School[]>([]);
   const [classes, setClasses] = useState<SchoolClass[]>([]);
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState<Role>("parent");
+  const [role, setRole] = useState<EtablissementRole>("teacher");
   const [schoolId, setSchoolId] = useState("");
   const [classId, setClassId] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -40,8 +47,7 @@ export default function SignupPage() {
       .then(({ data }) => setClasses(data || []));
   }, [schoolId]);
 
-  const needsSchool = role !== "structure";
-  const needsClass = role === "parent" || role === "teacher";
+  const needsClass = role === "teacher";
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -63,7 +69,7 @@ export default function SignupPage() {
       id: data.user.id,
       full_name: fullName,
       role,
-      school_id: needsSchool ? schoolId || null : null,
+      school_id: schoolId || null,
       class_id: needsClass ? classId || null : null,
     });
 
@@ -81,7 +87,9 @@ export default function SignupPage() {
       <Link href="/" className="text-brand-700 font-bold underline">
         ← Accueil
       </Link>
-      <h1 className="text-2xl font-bold font-serif mt-3 mb-6">Créer un compte</h1>
+      <h1 className="text-2xl font-bold font-serif mt-3 mb-6">
+        Créer un compte Établissement
+      </h1>
 
       <form onSubmit={handleSubmit} className="space-y-5" noValidate>
         <div>
@@ -129,7 +137,7 @@ export default function SignupPage() {
         <fieldset>
           <legend className="font-bold mb-2 text-sm">Je suis…</legend>
           <div className="grid grid-cols-2 gap-3">
-            {(Object.keys(ROLE_LABELS) as Role[]).map((r) => (
+            {(Object.keys(ROLE_LABELS) as EtablissementRole[]).map((r) => (
               <label
                 key={r}
                 className={`border-2 rounded-[10px] p-3 cursor-pointer text-center font-bold ${
@@ -152,27 +160,25 @@ export default function SignupPage() {
           </div>
         </fieldset>
 
-        {needsSchool && (
-          <div>
-            <label htmlFor="school" className="block font-bold mb-1.5 text-sm">
-              École
-            </label>
-            <select
-              id="school"
-              required
-              value={schoolId}
-              onChange={(e) => setSchoolId(e.target.value)}
-              className="w-full border-2 border-border bg-surface text-ink rounded-[10px] p-3 text-lg"
-            >
-              <option value="">— Choisir une école —</option>
-              {schools.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.name} ({s.city})
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
+        <div>
+          <label htmlFor="school" className="block font-bold mb-1.5 text-sm">
+            École
+          </label>
+          <select
+            id="school"
+            required
+            value={schoolId}
+            onChange={(e) => setSchoolId(e.target.value)}
+            className="w-full border-2 border-border bg-surface text-ink rounded-[10px] p-3 text-lg"
+          >
+            <option value="">— Choisir une école —</option>
+            {schools.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.name} ({s.city})
+              </option>
+            ))}
+          </select>
+        </div>
 
         {needsClass && schoolId && (
           <div>

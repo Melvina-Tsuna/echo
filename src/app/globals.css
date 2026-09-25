@@ -77,3 +77,12 @@ h1, h2, h3 {
   font-size: 1.35rem;
   line-height: 1.6;
 }
+
+.voice-welcome-fallback {
+  background: var(--brand-50);
+  color: var(--ink);
+  text-align: center;
+  padding: 0.6rem 1rem;
+  margin: 0;
+  font-weight: 600;
+}

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Fraunces, Source_Sans_3 } from "next/font/google";
 import "./globals.css";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
+import VoiceWelcome from "@/components/VoiceWelcome";
 
 const fraunces = Fraunces({
   subsets: ["latin"],
@@ -40,6 +41,7 @@ export default function RootLayout({
           Aller au contenu principal
         </a>
         <ServiceWorkerRegister />
+        <VoiceWelcome />
         {children}
       </body>
     </html>

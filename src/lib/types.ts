@@ -28,6 +28,14 @@ export interface Profile {
   class_id: string | null;
 }
 
+export interface Child {
+  id: string;
+  parent_id: string;
+  full_name: string;
+  school_id: string | null;
+  class_id: string | null;
+}
+
 export interface Post {
   id: string;
   author_id: string;
@@ -49,6 +57,43 @@ export interface EcosystemLink {
   url: string;
   sort_order: number;
 }
+
+export interface Attendance {
+  id: string;
+  student_id: string;
+  class_id: string;
+  date: string;
+  present: boolean;
+  recorded_by: string;
+}
+
+export interface Grade {
+  id: string;
+  student_id: string;
+  class_id: string;
+  subject: string;
+  score: number;
+  max_score: number;
+  evaluated_at: string;
+}
+
+export type AlertType = "absenteisme" | "chute_notes";
+
+export interface Alert {
+  id: string;
+  student_id: string;
+  class_id: string;
+  type: AlertType;
+  message: string;
+  details: Record<string, unknown> | null;
+  created_at: string;
+  acknowledged: boolean;
+}
+
+export const ALERT_LABELS: Record<AlertType, { label: string; icon: string }> = {
+  absenteisme: { label: "Absentéisme", icon: "📉" },
+  chute_notes: { label: "Chute de notes", icon: "⚠️" },
+};
 
 export const CATEGORY_LABELS: Record<Category, { label: string; icon: string }> = {
   devoir: { label: "Devoir", icon: "📘" },
