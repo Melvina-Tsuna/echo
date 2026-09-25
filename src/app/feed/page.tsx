@@ -17,6 +17,7 @@ import {
 import PostCard from "@/components/PostCard";
 import AudioButton from "@/components/AudioButton";
 import BeninFlag from "@/components/BeninFlag";
+import PushOptIn from "@/components/PushOptIn";
 
 const CACHE_KEY = "edutech-benin-feed-cache";
 
@@ -260,6 +261,10 @@ export default function FeedPage() {
 
       <div className="max-w-2xl mx-auto px-4 py-6 space-y-4">
         {loading && <p>Chargement…</p>}
+
+        {!loading && profile?.role === "parent" && (
+          <PushOptIn parentId={profile.id} />
+        )}
 
         {!loading && profile?.role === "parent" && (
           <section className="rounded-xl border-2 border-border bg-surface p-5">

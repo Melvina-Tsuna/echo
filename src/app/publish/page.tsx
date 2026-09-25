@@ -112,10 +112,12 @@ export default function PublishPage() {
           : profile.class_id
         : null;
 
+    const postSchoolId = scope !== "national" ? profile.school_id : null;
+
     const { error: insertError } = await supabase.from("posts").insert({
       author_id: profile.id,
       scope,
-      school_id: scope !== "national" ? profile.school_id : null,
+      school_id: postSchoolId,
       class_id: targetClassId,
       category,
       title,
@@ -128,6 +130,21 @@ export default function PublishPage() {
       setError(insertError.message);
       return;
     }
+
+    // Notification push : best-effort, ne doit jamais faire échouer la
+    // publication elle-même si ça ne marche pas (réseau, non configuré...).
+    fetch("/api/notify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        scope,
+        school_id: postSchoolId,
+        class_id: targetClassId,
+        title,
+        body,
+      }),
+    }).catch(() => {});
+
     setSuccess(true);
     setTitle("");
     setBody("");
