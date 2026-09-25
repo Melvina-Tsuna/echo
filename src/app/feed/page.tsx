@@ -34,6 +34,7 @@ export default function FeedPage() {
   const [classesBySchool, setClassesBySchool] = useState<
     Record<string, SchoolClass[]>
   >({});
+  const [childClasses, setChildClasses] = useState<SchoolClass[]>([]);
   const [showAddChild, setShowAddChild] = useState(false);
   const [newChildName, setNewChildName] = useState("");
   const [newChildSchoolId, setNewChildSchoolId] = useState("");
@@ -47,6 +48,15 @@ export default function FeedPage() {
       if (c.class_id) childNameByClassId[c.class_id] = c.full_name;
     });
   }
+
+  const schoolNameById: Record<string, string> = {};
+  schools.forEach((s) => {
+    schoolNameById[s.id] = s.name;
+  });
+  const classNameById: Record<string, string> = {};
+  childClasses.forEach((c) => {
+    classNameById[c.id] = c.name;
+  });
 
   const loadFeed = useCallback(async () => {
     const { data: userData } = await supabase.auth.getUser();
@@ -88,6 +98,14 @@ export default function FeedPage() {
     const classIds = currentChildren
       .map((c) => c.class_id)
       .filter(Boolean) as string[];
+
+    if (p.role === "parent" && classIds.length > 0) {
+      const { data: classesData } = await supabase
+        .from("classes")
+        .select("*")
+        .in("id", classIds);
+      setChildClasses((classesData || []) as SchoolClass[]);
+    }
 
     // Filtre : mes posts nationaux + ceux de mes écoles + ceux de mes classes
     let query = supabase
@@ -280,12 +298,69 @@ export default function FeedPage() {
             </div>
 
             {children.length > 0 && (
-              <ul className="space-y-1 mb-2">
-                {children.map((c) => (
-                  <li key={c.id} className="text-sm text-muted">
-                    {c.full_name}
-                  </li>
-                ))}
+              <div className="mb-3">
+                <AudioButton
+                  label="Écouter la liste"
+                  context="Mes enfants"
+                  text={children
+                    .map((c) => {
+                      const schoolName = c.school_id
+                        ? schoolNameById[c.school_id]
+                        : undefined;
+                      const className = c.class_id
+                        ? classNameById[c.class_id]
+                        : undefined;
+                      const details = [schoolName, className]
+                        .filter(Boolean)
+                        .join(", ");
+                      return details
+                        ? `${c.full_name}, ${details}.`
+                        : `${c.full_name}.`;
+                    })
+                    .join(" ")}
+                />
+              </div>
+            )}
+
+            {children.length > 0 && (
+              <ul className="space-y-2 mb-2">
+                {children.map((c) => {
+                  const schoolName = c.school_id
+                    ? schoolNameById[c.school_id]
+                    : undefined;
+                  const className = c.class_id
+                    ? classNameById[c.class_id]
+                    : undefined;
+                  return (
+                    <li
+                      key={c.id}
+                      className="flex items-start gap-3 rounded-lg border border-border bg-bg px-3 py-2.5"
+                    >
+                      <span className="text-xl leading-none shrink-0" aria-hidden="true">
+                        🧒
+                      </span>
+                      <div className="min-w-0">
+                        <p className="font-semibold text-ink m-0">
+                          {c.full_name}
+                        </p>
+                        {(schoolName || className) && (
+                          <p className="text-xs text-muted m-0 mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
+                            {schoolName && (
+                              <span className="inline-flex items-center gap-1">
+                                <span aria-hidden="true">🏫</span> {schoolName}
+                              </span>
+                            )}
+                            {className && (
+                              <span className="inline-flex items-center gap-1">
+                                <span aria-hidden="true">📚</span> {className}
+                              </span>
+                            )}
+                          </p>
+                        )}
+                      </div>
+                    </li>
+                  );
+                })}
               </ul>
             )}
 
