@@ -227,6 +227,7 @@ export default function PublishPage() {
           <input
             id="title"
             required
+            placeholder="ex. Réunion parents-professeurs"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             className="w-full border-2 border-border bg-surface text-ink rounded-[10px] p-3 text-lg"
@@ -241,6 +242,7 @@ export default function PublishPage() {
             id="body"
             required
             rows={5}
+            placeholder="ex. La réunion aura lieu samedi à 9h en salle polyvalente."
             value={body}
             onChange={(e) => setBody(e.target.value)}
             className="w-full border-2 border-border bg-surface text-ink rounded-[10px] p-3 text-lg"

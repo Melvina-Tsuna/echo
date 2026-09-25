@@ -171,6 +171,7 @@ export default function TrackPage() {
                   type="button"
                   disabled={savingId === row.child.id}
                   onClick={() => markAttendance(row.child.id, true)}
+                  aria-label={`Présent : ${row.child.full_name}`}
                   className={`rounded-lg px-4 py-2 font-semibold border-2 ${
                     row.presentToday === true
                       ? "bg-brand-600 text-white border-brand-600"
@@ -183,6 +184,7 @@ export default function TrackPage() {
                   type="button"
                   disabled={savingId === row.child.id}
                   onClick={() => markAttendance(row.child.id, false)}
+                  aria-label={`Absent : ${row.child.full_name}`}
                   className={`rounded-lg px-4 py-2 font-semibold border-2 ${
                     row.presentToday === false
                       ? "bg-red-600 text-white border-red-600"
@@ -200,6 +202,7 @@ export default function TrackPage() {
                 <input
                   type="text"
                   placeholder="Matière"
+                  aria-label={`Matière : ${row.child.full_name}`}
                   value={row.subject}
                   onChange={(e) =>
                     setRows((prev) =>
@@ -218,6 +221,7 @@ export default function TrackPage() {
                   max={20}
                   step={0.5}
                   placeholder="Note"
+                  aria-label={`Note : ${row.child.full_name}`}
                   value={row.score}
                   onChange={(e) =>
                     setRows((prev) =>
@@ -234,6 +238,7 @@ export default function TrackPage() {
                   type="button"
                   disabled={savingId === row.child.id || !row.subject || !row.score}
                   onClick={() => saveGrade(row.child.id)}
+                  aria-label={`Enregistrer la note : ${row.child.full_name}`}
                   className="bg-brand-600 text-white font-semibold rounded-lg px-4 py-2 disabled:opacity-50"
                 >
                   Enregistrer

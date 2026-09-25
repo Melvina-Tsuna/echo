@@ -43,6 +43,7 @@ export default function LoginPage() {
             id="email"
             type="email"
             required
+            placeholder="ex. nom@email.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="w-full border-2 border-border bg-surface text-ink rounded-[10px] p-3 text-lg"
@@ -56,6 +57,7 @@ export default function LoginPage() {
             id="password"
             type="password"
             required
+            placeholder="Ton mot de passe"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="w-full border-2 border-border bg-surface text-ink rounded-[10px] p-3 text-lg"

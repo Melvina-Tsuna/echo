@@ -300,6 +300,7 @@ export default function FeedPage() {
                   <input
                     id="new-child-name"
                     required
+                    placeholder="ex. Prénom Nom"
                     value={newChildName}
                     onChange={(e) => setNewChildName(e.target.value)}
                     className="w-full border-2 border-border bg-bg text-ink rounded-[10px] p-2.5"

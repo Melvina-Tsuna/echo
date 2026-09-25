@@ -67,6 +67,7 @@ export default function SignupStructurePage() {
           <input
             id="fullName"
             required
+            placeholder="ex. Ministère de l'Éducation"
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
             className="w-full border-2 border-border bg-surface text-ink rounded-[10px] p-3 text-lg"
@@ -81,6 +82,7 @@ export default function SignupStructurePage() {
             id="email"
             type="email"
             required
+            placeholder="ex. contact@structure.bj"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="w-full border-2 border-border bg-surface text-ink rounded-[10px] p-3 text-lg"
@@ -96,6 +98,7 @@ export default function SignupStructurePage() {
             type="password"
             required
             minLength={6}
+            placeholder="6 caractères minimum"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="w-full border-2 border-border bg-surface text-ink rounded-[10px] p-3 text-lg"

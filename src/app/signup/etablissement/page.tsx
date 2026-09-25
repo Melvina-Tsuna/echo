@@ -156,6 +156,7 @@ export default function SignupEtablissementPage() {
           <input
             id="fullName"
             required
+            placeholder="ex. Jean AGBOTON"
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
             className="w-full border-2 border-border bg-surface text-ink rounded-[10px] p-3 text-lg"
@@ -170,6 +171,7 @@ export default function SignupEtablissementPage() {
             id="email"
             type="email"
             required
+            placeholder="ex. jean@ecole.bj"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="w-full border-2 border-border bg-surface text-ink rounded-[10px] p-3 text-lg"
@@ -185,6 +187,7 @@ export default function SignupEtablissementPage() {
             type="password"
             required
             minLength={6}
+            placeholder="6 caractères minimum"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="w-full border-2 border-border bg-surface text-ink rounded-[10px] p-3 text-lg"
@@ -226,6 +229,7 @@ export default function SignupEtablissementPage() {
               <input
                 id="new-school-name"
                 required
+                placeholder="ex. EPP Godomey"
                 value={newSchoolName}
                 onChange={(e) => setNewSchoolName(e.target.value)}
                 className="w-full border-2 border-border bg-surface text-ink rounded-[10px] p-3 text-lg"
@@ -238,6 +242,7 @@ export default function SignupEtablissementPage() {
               <input
                 id="new-school-city"
                 required
+                placeholder="ex. Cotonou"
                 value={newSchoolCity}
                 onChange={(e) => setNewSchoolCity(e.target.value)}
                 className="w-full border-2 border-border bg-surface text-ink rounded-[10px] p-3 text-lg"

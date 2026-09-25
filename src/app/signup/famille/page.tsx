@@ -136,6 +136,7 @@ export default function SignupFamillePage() {
           <input
             id="fullName"
             required
+            placeholder="ex. Aïcha KOFFI"
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
             className="w-full border-2 border-border bg-surface text-ink rounded-[10px] p-3 text-lg"
@@ -150,6 +151,7 @@ export default function SignupFamillePage() {
             id="email"
             type="email"
             required
+            placeholder="ex. aicha@email.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="w-full border-2 border-border bg-surface text-ink rounded-[10px] p-3 text-lg"
@@ -165,6 +167,7 @@ export default function SignupFamillePage() {
             type="password"
             required
             minLength={6}
+            placeholder="6 caractères minimum"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="w-full border-2 border-border bg-surface text-ink rounded-[10px] p-3 text-lg"
@@ -201,6 +204,7 @@ export default function SignupFamillePage() {
                 <input
                   id={`child-name-${index}`}
                   required
+                  placeholder="ex. Prénom Nom"
                   value={child.fullName}
                   onChange={(e) => updateChild(index, { fullName: e.target.value })}
                   className="w-full border-2 border-border bg-surface text-ink rounded-[10px] p-3 text-lg"
