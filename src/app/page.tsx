@@ -1,4 +1,5 @@
 import Link from "next/link";
+import BeninFlag from "@/components/BeninFlag";
 
 export default function HomePage() {
   return (
@@ -55,8 +56,9 @@ export default function HomePage() {
 
         <Link
           href="/ecosystem"
-          className="text-brand-700 underline font-semibold text-[0.95rem]"
+          className="flex items-center gap-2.5 border-2 border-brand-600 text-brand-700 font-bold rounded-[10px] px-6 py-3"
         >
+          <BeninFlag className="w-7 h-5" />
           Voir les autres plateformes d&apos;éducation au Bénin
         </Link>
       </section>

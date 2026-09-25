@@ -3,6 +3,7 @@ import { Fraunces, Source_Sans_3 } from "next/font/google";
 import "./globals.css";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import VoiceWelcome from "@/components/VoiceWelcome";
+import AccessibilityControls from "@/components/AccessibilityControls";
 
 const fraunces = Fraunces({
   subsets: ["latin"],
@@ -42,6 +43,7 @@ export default function RootLayout({
         </a>
         <ServiceWorkerRegister />
         <VoiceWelcome />
+        <AccessibilityControls />
         {children}
       </body>
     </html>

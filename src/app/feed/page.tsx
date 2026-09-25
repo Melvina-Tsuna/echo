@@ -16,6 +16,7 @@ import {
 } from "@/lib/types";
 import PostCard from "@/components/PostCard";
 import AudioButton from "@/components/AudioButton";
+import BeninFlag from "@/components/BeninFlag";
 
 const CACHE_KEY = "edutech-benin-feed-cache";
 
@@ -27,8 +28,6 @@ export default function FeedPage() {
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [loading, setLoading] = useState(true);
   const [offline, setOffline] = useState(false);
-  const [largeText, setLargeText] = useState(false);
-  const [highContrast, setHighContrast] = useState(false);
 
   const [schools, setSchools] = useState<School[]>([]);
   const [classesBySchool, setClassesBySchool] = useState<
@@ -206,12 +205,7 @@ export default function FeedPage() {
     profile?.role === "structure";
 
   return (
-    <main
-      id="contenu-principal"
-      className={`min-h-screen ${
-        highContrast ? "bg-black text-yellow-300" : "bg-bg text-ink"
-      }`}
-    >
+    <main id="contenu-principal" className="min-h-screen bg-bg text-ink">
       <header className="border-b-2 border-border px-4 py-4 flex flex-wrap items-center justify-between gap-3 bg-surface">
         <div>
           <h1 className="text-xl font-bold text-brand-700">Écho</h1>
@@ -224,8 +218,9 @@ export default function FeedPage() {
         <nav className="flex flex-wrap gap-2 items-center">
           <Link
             href="/ecosystem"
-            className="text-brand-700 font-semibold underline"
+            className="flex items-center gap-1.5 border-2 border-brand-600 text-brand-700 font-semibold rounded-lg px-4 py-2"
           >
+            <BeninFlag />
             Autres plateformes
           </Link>
           {canPublish && (
@@ -253,23 +248,6 @@ export default function FeedPage() {
         </nav>
       </header>
 
-      <div className="px-4 py-3 flex flex-wrap gap-3 border-b border-border bg-surface">
-        <button
-          onClick={() => setLargeText((v) => !v)}
-          aria-pressed={largeText}
-          className="border-2 border-border rounded-lg px-3 py-2 font-semibold"
-        >
-          {largeText ? "A− Taille normale" : "A+ Agrandir le texte"}
-        </button>
-        <button
-          onClick={() => setHighContrast((v) => !v)}
-          aria-pressed={highContrast}
-          className="border-2 border-border rounded-lg px-3 py-2 font-semibold"
-        >
-          {highContrast ? "Contraste normal" : "Contraste élevé"}
-        </button>
-      </div>
-
       {offline && (
         <p
           role="status"
@@ -280,11 +258,7 @@ export default function FeedPage() {
         </p>
       )}
 
-      <div
-        className={`max-w-2xl mx-auto px-4 py-6 space-y-4 ${
-          largeText ? "text-xl" : ""
-        }`}
-      >
+      <div className="max-w-2xl mx-auto px-4 py-6 space-y-4">
         {loading && <p>Chargement…</p>}
 
         {!loading && profile?.role === "parent" && (

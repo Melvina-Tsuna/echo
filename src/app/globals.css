@@ -44,6 +44,31 @@ html {
   font-size: 18px; /* base plus grande pour lisibilité, ajustable via le bouton A+ */
 }
 
+/* Réglages d'accessibilité globaux (bouton flottant "Aa" dans le layout).
+   En redéfinissant les variables de couleur, tout composant qui utilise déjà
+   bg-bg / text-ink / border-border / etc. suit automatiquement, sans avoir à
+   dupliquer de logique de contraste page par page. */
+html.a11y-large-text {
+  font-size: 22px;
+}
+
+html.a11y-high-contrast {
+  --bg: #000000;
+  --surface: #000000;
+  --surface-2: #000000;
+  --border: #fde047;
+  --text: #fde047;
+  --text-muted: #fde047;
+  --brand-50: #000000;
+  --brand-100: #000000;
+  --brand-600: #fde047;
+  --brand-700: #fde047;
+  --brand-ink: #000000;
+  --amber-bg: #000000;
+  --amber-text: #fde047;
+  --danger: #fde047;
+}
+
 body {
   @apply bg-bg text-ink font-sans;
 }

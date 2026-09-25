@@ -10,6 +10,7 @@ import {
   Profile,
   Scope,
   SCOPE_LABELS,
+  SchoolClass,
 } from "@/lib/types";
 
 export default function PublishPage() {
@@ -21,6 +22,8 @@ export default function PublishPage() {
   const [body, setBody] = useState("");
   const [category, setCategory] = useState<Category>("info");
   const [scope, setScope] = useState<Scope>("class");
+  const [classes, setClasses] = useState<SchoolClass[]>([]);
+  const [classId, setClassId] = useState("");
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -49,6 +52,16 @@ export default function PublishPage() {
       if (profileData.role === "school") setScope("school");
       if (profileData.role === "structure") setScope("national");
       if (profileData.role === "teacher") setScope("class");
+
+      if (profileData.role === "school" && profileData.school_id) {
+        const { data: classesData } = await supabase
+          .from("classes")
+          .select("*")
+          .eq("school_id", profileData.school_id)
+          .order("name");
+        setClasses(classesData || []);
+      }
+
       setChecking(false);
     }
     load();
@@ -86,11 +99,24 @@ export default function PublishPage() {
       }
     }
 
+    if (scope === "class" && profile.role === "school" && !classId) {
+      setError("Merci de choisir la classe concernée.");
+      setLoading(false);
+      return;
+    }
+
+    const targetClassId =
+      scope === "class"
+        ? profile.role === "school"
+          ? classId
+          : profile.class_id
+        : null;
+
     const { error: insertError } = await supabase.from("posts").insert({
       author_id: profile.id,
       scope,
       school_id: scope !== "national" ? profile.school_id : null,
-      class_id: scope === "class" ? profile.class_id : null,
+      class_id: targetClassId,
       category,
       title,
       body,
@@ -153,6 +179,28 @@ export default function PublishPage() {
             ))}
           </div>
         </fieldset>
+
+        {scope === "class" && profile?.role === "school" && (
+          <div>
+            <label htmlFor="class" className="block font-bold mb-1.5 text-sm">
+              Classe concernée
+            </label>
+            <select
+              id="class"
+              required
+              value={classId}
+              onChange={(e) => setClassId(e.target.value)}
+              className="w-full border-2 border-border bg-surface text-ink rounded-[10px] p-3 text-lg"
+            >
+              <option value="">— Choisir une classe —</option>
+              {classes.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         <div>
           <label htmlFor="category" className="block font-bold mb-1.5 text-sm">
