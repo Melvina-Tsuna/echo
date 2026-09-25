@@ -289,14 +289,14 @@ export default function FeedPage() {
 
         {!loading && profile?.role === "parent" && (
           <section className="rounded-xl border-2 border-border bg-surface p-5">
-            <div className="flex items-center justify-between gap-3 mb-3">
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
               <h2 className="font-bold text-lg m-0">Mes enfants</h2>
               <button
                 type="button"
                 onClick={() => setShowAddChild((v) => !v)}
-                className="border-2 border-brand-600 text-brand-700 font-bold rounded-lg px-3 py-1.5 text-sm"
+                className="shrink-0 whitespace-nowrap border-2 border-brand-600 text-brand-700 font-bold rounded-lg px-3 py-1.5 text-sm"
               >
-                {showAddChild ? "Annuler" : "+ Ajouter un enfant"}
+                {showAddChild ? "Annuler" : "+ Ajouter"}
               </button>
             </div>
 
