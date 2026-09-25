@@ -12,10 +12,15 @@ export default function AudioButton({
   text,
   audioUrl,
   label = "Écouter",
+  context,
 }: {
   text: string;
   audioUrl?: string | null;
   label?: string;
+  /** Contexte (ex. titre du message) ajouté au nom accessible du bouton,
+   * pour qu'un lecteur d'écran naviguant bouton par bouton (plusieurs
+   * boutons "Écouter" sur une même page) sache lequel concerne quoi. */
+  context?: string;
 }) {
   const [playing, setPlaying] = useState(false);
 
@@ -59,6 +64,11 @@ export default function AudioButton({
       type="button"
       onClick={handleClick}
       aria-pressed={playing}
+      aria-label={
+        context
+          ? `${playing ? "Arrêter" : label} : ${context}`
+          : undefined
+      }
       className="inline-flex items-center gap-2 rounded-lg border-2 border-brand-600 bg-surface px-4 py-2 text-brand-700 font-bold hover:bg-brand-50 focus-visible:outline-brand-700"
     >
       <span aria-hidden="true">{playing ? "⏸" : "🔊"}</span>

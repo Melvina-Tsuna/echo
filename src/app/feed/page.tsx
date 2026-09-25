@@ -390,7 +390,10 @@ export default function FeedPage() {
                   </p>
                 </div>
                 <p className="big-text mb-4">{alert.message}</p>
-                <AudioButton text={`Alerte. ${alert.message}`} />
+                <AudioButton
+                  text={`Alerte. ${alert.message}`}
+                  context={ALERT_LABELS[alert.type].label}
+                />
               </article>
             ))}
           </div>

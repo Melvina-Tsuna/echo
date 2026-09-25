@@ -1,7 +1,25 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import BeninFlag from "@/components/BeninFlag";
 
+const ROLE_LINKS = [
+  { href: "/signup/famille", icon: "👪", label: "Famille" },
+  { href: "/signup/etablissement", icon: "🏫", label: "Établissement" },
+  { href: "/signup/structure", icon: "🏛️", label: "Structure" },
+];
+
 export default function HomePage() {
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveIndex((i) => (i + 1) % ROLE_LINKS.length);
+    }, 2200);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <main id="contenu-principal" className="min-h-screen flex flex-col">
       <section className="flex-1 flex flex-col items-center justify-center text-center gap-6 px-4 py-16 bg-brand-50">
@@ -17,33 +35,20 @@ export default function HomePage() {
         <div className="w-full max-w-[480px]">
           <p className="font-bold mb-3 text-ink">Je crée un compte en tant que…</p>
           <div className="grid gap-4 sm:grid-cols-3">
-            <Link
-              href="/signup/famille"
-              className="flex flex-col items-center gap-2 bg-brand-600 text-brand-ink font-bold rounded-[10px] px-4 py-5"
-            >
-              <span aria-hidden="true" className="text-3xl">
-                👪
-              </span>
-              Famille
-            </Link>
-            <Link
-              href="/signup/etablissement"
-              className="flex flex-col items-center gap-2 bg-brand-600 text-brand-ink font-bold rounded-[10px] px-4 py-5"
-            >
-              <span aria-hidden="true" className="text-3xl">
-                🏫
-              </span>
-              Établissement
-            </Link>
-            <Link
-              href="/signup/structure"
-              className="flex flex-col items-center gap-2 bg-brand-600 text-brand-ink font-bold rounded-[10px] px-4 py-5"
-            >
-              <span aria-hidden="true" className="text-3xl">
-                🏛️
-              </span>
-              Structure
-            </Link>
+            {ROLE_LINKS.map((role, i) => (
+              <Link
+                key={role.href}
+                href={role.href}
+                className={`flex flex-col items-center gap-2 bg-brand-600 text-brand-ink font-bold rounded-[10px] px-4 py-5 ${
+                  i === activeIndex ? "pulse-guide" : ""
+                }`}
+              >
+                <span aria-hidden="true" className="text-3xl">
+                  {role.icon}
+                </span>
+                {role.label}
+              </Link>
+            ))}
           </div>
         </div>
 

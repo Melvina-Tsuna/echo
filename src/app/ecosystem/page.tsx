@@ -66,6 +66,7 @@ export default function EcosystemPage() {
               <AudioButton
                 text={`${link.name}. ${link.description}`}
                 label="Écouter"
+                context={link.name}
               />
               <a
                 href={link.url}

@@ -35,7 +35,11 @@ export default function PostCard({
       <p className="big-text mt-2 mb-3.5 whitespace-pre-wrap">{post.body}</p>
 
       <div className="flex flex-wrap items-center gap-3">
-        <AudioButton text={`${cat.label}. ${post.title}. ${post.body}`} audioUrl={post.audio_url} />
+        <AudioButton
+          text={`${cat.label}. ${post.title}. ${post.body}`}
+          audioUrl={post.audio_url}
+          context={post.title}
+        />
         <time
           dateTime={post.created_at}
           className="text-xs text-muted tabular-nums"

@@ -14,6 +14,7 @@
   --brand-100: #cfe4d4;
   --brand-600: #1f6b45;
   --brand-700: #164f34;
+  --brand-600-rgb: 31, 107, 69;
   --brand-ink: #ffffff;
   --amber-bg: #fbedcf;
   --amber-text: #6b4c14;
@@ -33,6 +34,7 @@
     --brand-100: #234030;
     --brand-600: #4f9c72;
     --brand-700: #6fb98d;
+    --brand-600-rgb: 79, 156, 114;
     --brand-ink: #0c1a12;
     --amber-bg: #3a2c10;
     --amber-text: #f0c987;
@@ -63,6 +65,7 @@ html.a11y-high-contrast {
   --brand-100: #000000;
   --brand-600: #fde047;
   --brand-700: #fde047;
+  --brand-600-rgb: 253, 224, 71;
   --brand-ink: #000000;
   --amber-bg: #000000;
   --amber-text: #fde047;
@@ -110,4 +113,23 @@ h1, h2, h3 {
   padding: 0.6rem 1rem;
   margin: 0;
   font-weight: 600;
+}
+
+@keyframes pulse-guide {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(var(--brand-600-rgb), 0.55);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(var(--brand-600-rgb), 0);
+  }
+}
+
+.pulse-guide {
+  animation: pulse-guide 2.2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse-guide {
+    animation: none;
+  }
 }
