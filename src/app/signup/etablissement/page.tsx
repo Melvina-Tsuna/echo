@@ -4,7 +4,14 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
-import { School, SchoolClass } from "@/lib/types";
+import {
+  School,
+  SchoolClass,
+  SchoolType,
+  SCHOOL_TYPE_LABELS,
+  Zone,
+  ZONE_LABELS,
+} from "@/lib/types";
 
 type EtablissementRole = "teacher" | "school";
 
@@ -26,6 +33,8 @@ export default function SignupEtablissementPage() {
   const [creatingNewSchool, setCreatingNewSchool] = useState(false);
   const [newSchoolName, setNewSchoolName] = useState("");
   const [newSchoolCity, setNewSchoolCity] = useState("");
+  const [newSchoolType, setNewSchoolType] = useState<SchoolType>("publique");
+  const [newSchoolZone, setNewSchoolZone] = useState<Zone | "">("");
   const [creatingNewClass, setCreatingNewClass] = useState(false);
   const [newClassName, setNewClassName] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -58,8 +67,12 @@ export default function SignupEtablissementPage() {
     e.preventDefault();
     setError(null);
 
-    if (role === "school" && creatingNewSchool && (!newSchoolName || !newSchoolCity)) {
-      setError("Merci de renseigner le nom et la ville de l'école.");
+    if (
+      role === "school" &&
+      creatingNewSchool &&
+      (!newSchoolName || !newSchoolCity || !newSchoolZone)
+    ) {
+      setError("Merci de renseigner le nom, la ville et la zone de l'école.");
       return;
     }
     if (role === "school" && !creatingNewSchool && !schoolId) {
@@ -93,7 +106,12 @@ export default function SignupEtablissementPage() {
     if (role === "school" && creatingNewSchool) {
       const { data: newSchool, error: schoolError } = await supabase
         .from("schools")
-        .insert({ name: newSchoolName, city: newSchoolCity })
+        .insert({
+          name: newSchoolName,
+          city: newSchoolCity,
+          type: newSchoolType,
+          zone: newSchoolZone,
+        })
         .select()
         .single();
 
@@ -248,6 +266,43 @@ export default function SignupEtablissementPage() {
                 className="w-full border-2 border-border bg-surface text-ink rounded-[10px] p-3 text-lg"
               />
             </div>
+            <div>
+              <label htmlFor="new-school-type" className="block font-bold mb-1.5 text-sm">
+                Type d&apos;école
+              </label>
+              <select
+                id="new-school-type"
+                required
+                value={newSchoolType}
+                onChange={(e) => setNewSchoolType(e.target.value as SchoolType)}
+                className="w-full border-2 border-border bg-surface text-ink rounded-[10px] p-3 text-lg"
+              >
+                {(Object.keys(SCHOOL_TYPE_LABELS) as SchoolType[]).map((t) => (
+                  <option key={t} value={t}>
+                    {SCHOOL_TYPE_LABELS[t]}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="new-school-zone" className="block font-bold mb-1.5 text-sm">
+                Zone (pôle de développement territorial)
+              </label>
+              <select
+                id="new-school-zone"
+                required
+                value={newSchoolZone}
+                onChange={(e) => setNewSchoolZone(e.target.value as Zone)}
+                className="w-full border-2 border-border bg-surface text-ink rounded-[10px] p-3 text-lg"
+              >
+                <option value="">— Choisir une zone —</option>
+                {(Object.keys(ZONE_LABELS) as Zone[]).map((z) => (
+                  <option key={z} value={z}>
+                    {ZONE_LABELS[z]}
+                  </option>
+                ))}
+              </select>
+            </div>
             <button
               type="button"
               onClick={() => setCreatingNewSchool(false)}
@@ -271,7 +326,8 @@ export default function SignupEtablissementPage() {
               <option value="">— Choisir une école —</option>
               {schools.map((s) => (
                 <option key={s.id} value={s.id}>
-                  {s.name} ({s.city})
+                  {s.name} ({s.city}, {SCHOOL_TYPE_LABELS[s.type]}
+                  {s.zone ? `, ${ZONE_LABELS[s.zone]}` : ""})
                 </option>
               ))}
             </select>

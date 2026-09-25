@@ -13,6 +13,8 @@ import {
   ROLE_LABELS,
   School,
   SchoolClass,
+  SCHOOL_TYPE_LABELS,
+  ZONE_LABELS,
 } from "@/lib/types";
 import PostCard from "@/components/PostCard";
 import AudioButton from "@/components/AudioButton";
@@ -258,6 +260,14 @@ export default function FeedPage() {
               Suivi de classe
             </Link>
           )}
+          {profile?.role === "structure" && (
+            <Link
+              href="/admin/ecoles"
+              className="border-2 border-brand-600 text-brand-700 font-semibold rounded-lg px-4 py-2"
+            >
+              Gérer les écoles
+            </Link>
+          )}
           <button
             onClick={handleLogout}
             className="border-2 border-border rounded-lg px-4 py-2"
@@ -407,7 +417,8 @@ export default function FeedPage() {
                     <option value="">— Choisir une école —</option>
                     {schools.map((s) => (
                       <option key={s.id} value={s.id}>
-                        {s.name} ({s.city})
+                        {s.name} ({s.city}, {SCHOOL_TYPE_LABELS[s.type]}
+                        {s.zone ? `, ${ZONE_LABELS[s.zone]}` : ""})
                       </option>
                     ))}
                   </select>

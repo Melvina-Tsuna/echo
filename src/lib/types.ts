@@ -8,11 +8,36 @@ export type Category =
   | "urgence"
   | "info";
 
+export type SchoolType = "publique" | "privee";
+export type Zone =
+  | "grand_nokoue"
+  | "nord_ouest"
+  | "nord_est"
+  | "centre"
+  | "sud_ouest"
+  | "sud_est";
+
 export interface School {
   id: string;
   name: string;
   city: string;
+  type: SchoolType;
+  zone: Zone | null;
 }
+
+export const SCHOOL_TYPE_LABELS: Record<SchoolType, string> = {
+  publique: "Publique",
+  privee: "Privée",
+};
+
+export const ZONE_LABELS: Record<Zone, string> = {
+  grand_nokoue: "Grand Nokoué",
+  nord_ouest: "Nord-Ouest",
+  nord_est: "Nord-Est",
+  centre: "Centre",
+  sud_ouest: "Sud-Ouest",
+  sud_est: "Sud-Est",
+};
 
 export interface SchoolClass {
   id: string;

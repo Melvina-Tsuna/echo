@@ -2,10 +2,10 @@
 -- Données fictives de démo — à exécuter APRÈS schema.sql
 -- ============================================================
 
-insert into schools (id, name, city) values
-  ('11111111-1111-1111-1111-111111111111', 'EPP Cotonou Centre', 'Cotonou'),
-  ('22222222-2222-2222-2222-222222222222', 'Collège Sainte-Rita', 'Cotonou'),
-  ('33333333-3333-3333-3333-333333333333', 'EPP Parakou I', 'Parakou');
+insert into schools (id, name, city, type, zone) values
+  ('11111111-1111-1111-1111-111111111111', 'EPP Cotonou Centre', 'Cotonou', 'publique', 'grand_nokoue'),
+  ('22222222-2222-2222-2222-222222222222', 'Collège Sainte-Rita', 'Cotonou', 'privee', 'grand_nokoue'),
+  ('33333333-3333-3333-3333-333333333333', 'EPP Parakou I', 'Parakou', 'publique', 'nord_est');
 
 insert into classes (id, school_id, name) values
   ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '11111111-1111-1111-1111-111111111111', 'CM2 A'),

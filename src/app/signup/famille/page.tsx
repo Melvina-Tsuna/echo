@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
-import { School, SchoolClass } from "@/lib/types";
+import { School, SchoolClass, SCHOOL_TYPE_LABELS, ZONE_LABELS } from "@/lib/types";
 
 interface ChildDraft {
   fullName: string;
@@ -231,7 +231,8 @@ export default function SignupFamillePage() {
                   <option value="">— Choisir une école —</option>
                   {schools.map((s) => (
                     <option key={s.id} value={s.id}>
-                      {s.name} ({s.city})
+                      {s.name} ({s.city}, {SCHOOL_TYPE_LABELS[s.type]}
+                      {s.zone ? `, ${ZONE_LABELS[s.zone]}` : ""})
                     </option>
                   ))}
                 </select>
