@@ -67,6 +67,15 @@ create policy "schools readable by all" on schools for select using (true);
 create policy "classes readable by all" on classes for select using (true);
 create policy "ecosystem readable by all" on ecosystem_links for select using (true);
 
+-- Un compte École peut enregistrer son établissement à l'inscription, et un
+-- compte Enseignant peut créer sa classe si elle n'existe pas encore
+-- (aucun profil n'existe encore à ce moment, donc ouvert à tout utilisateur
+-- authentifié plutôt que restreint par rôle)
+create policy "schools insert by authenticated" on schools
+  for insert to authenticated with check (true);
+create policy "classes insert by authenticated" on classes
+  for insert to authenticated with check (true);
+
 -- Profils : chacun lit/édite le sien ; lecture publique du nom+rôle pour affichage auteur
 create policy "profiles readable by all" on profiles for select using (true);
 create policy "profiles insert own" on profiles for insert with check (auth.uid() = id);

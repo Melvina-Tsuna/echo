@@ -1,7 +1,13 @@
 import { CATEGORY_LABELS, SCOPE_LABELS, Post } from "@/lib/types";
 import AudioButton from "./AudioButton";
 
-export default function PostCard({ post }: { post: Post }) {
+export default function PostCard({
+  post,
+  childName,
+}: {
+  post: Post;
+  childName?: string;
+}) {
   const cat = CATEGORY_LABELS[post.category];
 
   return (
@@ -20,6 +26,7 @@ export default function PostCard({ post }: { post: Post }) {
         <div>
           <p className="text-xs font-bold text-brand-700 uppercase tracking-wide m-0">
             {cat.label} · {SCOPE_LABELS[post.scope]}
+            {childName ? ` · Pour ${childName}` : ""}
           </p>
           <h3 className="text-lg font-bold font-serif mt-0.5 mb-0">{post.title}</h3>
         </div>

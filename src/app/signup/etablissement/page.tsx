@@ -23,6 +23,11 @@ export default function SignupEtablissementPage() {
   const [role, setRole] = useState<EtablissementRole>("teacher");
   const [schoolId, setSchoolId] = useState("");
   const [classId, setClassId] = useState("");
+  const [creatingNewSchool, setCreatingNewSchool] = useState(false);
+  const [newSchoolName, setNewSchoolName] = useState("");
+  const [newSchoolCity, setNewSchoolCity] = useState("");
+  const [creatingNewClass, setCreatingNewClass] = useState(false);
+  const [newClassName, setNewClassName] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -52,6 +57,24 @@ export default function SignupEtablissementPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+
+    if (role === "school" && creatingNewSchool && (!newSchoolName || !newSchoolCity)) {
+      setError("Merci de renseigner le nom et la ville de l'école.");
+      return;
+    }
+    if (role === "school" && !creatingNewSchool && !schoolId) {
+      setError("Merci de choisir une école.");
+      return;
+    }
+    if (needsClass && creatingNewClass && !newClassName) {
+      setError("Merci de renseigner le nom de la classe.");
+      return;
+    }
+    if (needsClass && !creatingNewClass && !classId) {
+      setError("Merci de choisir une classe.");
+      return;
+    }
+
     setLoading(true);
 
     const { data, error: signUpError } = await supabase.auth.signUp({
@@ -65,12 +88,46 @@ export default function SignupEtablissementPage() {
       return;
     }
 
+    let finalSchoolId = schoolId || null;
+
+    if (role === "school" && creatingNewSchool) {
+      const { data: newSchool, error: schoolError } = await supabase
+        .from("schools")
+        .insert({ name: newSchoolName, city: newSchoolCity })
+        .select()
+        .single();
+
+      if (schoolError || !newSchool) {
+        setError(schoolError?.message || "Erreur lors de la création de l'école.");
+        setLoading(false);
+        return;
+      }
+      finalSchoolId = newSchool.id;
+    }
+
+    let finalClassId = classId || null;
+
+    if (needsClass && creatingNewClass) {
+      const { data: newClass, error: classError } = await supabase
+        .from("classes")
+        .insert({ name: newClassName, school_id: finalSchoolId })
+        .select()
+        .single();
+
+      if (classError || !newClass) {
+        setError(classError?.message || "Erreur lors de la création de la classe.");
+        setLoading(false);
+        return;
+      }
+      finalClassId = newClass.id;
+    }
+
     const { error: profileError } = await supabase.from("profiles").insert({
       id: data.user.id,
       full_name: fullName,
       role,
-      school_id: schoolId || null,
-      class_id: needsClass ? classId || null : null,
+      school_id: finalSchoolId,
+      class_id: needsClass ? finalClassId : null,
     });
 
     if (profileError) {
@@ -160,46 +217,121 @@ export default function SignupEtablissementPage() {
           </div>
         </fieldset>
 
-        <div>
-          <label htmlFor="school" className="block font-bold mb-1.5 text-sm">
-            École
-          </label>
-          <select
-            id="school"
-            required
-            value={schoolId}
-            onChange={(e) => setSchoolId(e.target.value)}
-            className="w-full border-2 border-border bg-surface text-ink rounded-[10px] p-3 text-lg"
-          >
-            <option value="">— Choisir une école —</option>
-            {schools.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.name} ({s.city})
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {needsClass && schoolId && (
+        {role === "school" && creatingNewSchool ? (
+          <div className="space-y-4">
+            <div>
+              <label htmlFor="new-school-name" className="block font-bold mb-1.5 text-sm">
+                Nom de l&apos;école
+              </label>
+              <input
+                id="new-school-name"
+                required
+                value={newSchoolName}
+                onChange={(e) => setNewSchoolName(e.target.value)}
+                className="w-full border-2 border-border bg-surface text-ink rounded-[10px] p-3 text-lg"
+              />
+            </div>
+            <div>
+              <label htmlFor="new-school-city" className="block font-bold mb-1.5 text-sm">
+                Ville
+              </label>
+              <input
+                id="new-school-city"
+                required
+                value={newSchoolCity}
+                onChange={(e) => setNewSchoolCity(e.target.value)}
+                className="w-full border-2 border-border bg-surface text-ink rounded-[10px] p-3 text-lg"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={() => setCreatingNewSchool(false)}
+              className="text-brand-700 font-semibold underline text-sm"
+            >
+              Mon école existe déjà dans la liste
+            </button>
+          </div>
+        ) : (
           <div>
-            <label htmlFor="class" className="block font-bold mb-1.5 text-sm">
-              Classe
+            <label htmlFor="school" className="block font-bold mb-1.5 text-sm">
+              École
             </label>
             <select
-              id="class"
+              id="school"
               required
-              value={classId}
-              onChange={(e) => setClassId(e.target.value)}
+              value={schoolId}
+              onChange={(e) => setSchoolId(e.target.value)}
               className="w-full border-2 border-border bg-surface text-ink rounded-[10px] p-3 text-lg"
             >
-              <option value="">— Choisir une classe —</option>
-              {classes.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
+              <option value="">— Choisir une école —</option>
+              {schools.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.name} ({s.city})
                 </option>
               ))}
             </select>
+            {role === "school" && (
+              <button
+                type="button"
+                onClick={() => setCreatingNewSchool(true)}
+                className="mt-2 text-brand-700 font-semibold underline text-sm"
+              >
+                Mon école n&apos;est pas dans la liste, la créer
+              </button>
+            )}
           </div>
+        )}
+
+        {needsClass && schoolId && (
+          creatingNewClass ? (
+            <div>
+              <label htmlFor="new-class-name" className="block font-bold mb-1.5 text-sm">
+                Nom de la classe
+              </label>
+              <input
+                id="new-class-name"
+                required
+                placeholder="ex. CM2 A"
+                value={newClassName}
+                onChange={(e) => setNewClassName(e.target.value)}
+                className="w-full border-2 border-border bg-surface text-ink rounded-[10px] p-3 text-lg"
+              />
+              <button
+                type="button"
+                onClick={() => setCreatingNewClass(false)}
+                className="mt-2 text-brand-700 font-semibold underline text-sm"
+              >
+                Ma classe existe déjà dans la liste
+              </button>
+            </div>
+          ) : (
+            <div>
+              <label htmlFor="class" className="block font-bold mb-1.5 text-sm">
+                Classe
+              </label>
+              <select
+                id="class"
+                required
+                value={classId}
+                onChange={(e) => setClassId(e.target.value)}
+                className="w-full border-2 border-border bg-surface text-ink rounded-[10px] p-3 text-lg"
+              >
+                <option value="">— Choisir une classe —</option>
+                {classes.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="button"
+                onClick={() => setCreatingNewClass(true)}
+                className="mt-2 text-brand-700 font-semibold underline text-sm"
+              >
+                Ma classe n&apos;est pas dans la liste, la créer
+              </button>
+            </div>
+          )
         )}
 
         {error && (

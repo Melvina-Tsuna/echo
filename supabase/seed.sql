@@ -4,7 +4,7 @@
 
 insert into schools (id, name, city) values
   ('11111111-1111-1111-1111-111111111111', 'EPP Cotonou Centre', 'Cotonou'),
-  ('22222222-2222-2222-2222-222222222222', 'Collège Sainte-Rita', 'Porto-Novo'),
+  ('22222222-2222-2222-2222-222222222222', 'Collège Sainte-Rita', 'Cotonou'),
   ('33333333-3333-3333-3333-333333333333', 'EPP Parakou I', 'Parakou');
 
 insert into classes (id, school_id, name) values

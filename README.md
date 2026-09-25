@@ -98,10 +98,22 @@ présent (aucune information n'est disponible uniquement en audio).
    sécurité, bucket de stockage), puis `supabase/migration_children.sql`
    (table `children` pour le multi-enfants — voir plus bas), puis
    `supabase/migration_presence.sql` si le suivi de classe est utilisé.
-3. Crée manuellement quelques écoles, classes et liens d'écosystème dans les
-   tables `schools`, `classes` et `ecosystem_links` (ou via l'interface
-   Supabase Table Editor).
+3. Exécute `supabase/seed.sql` pour avoir quelques écoles, classes et liens
+   d'écosystème de démo (ou crée les tiens via l'interface Supabase Table
+   Editor).
 4. Dans **Project Settings → API**, récupère `Project URL` et la clé `anon`.
+
+> Si ta base existait déjà avant l'ajout de la création d'école/classe à
+> l'inscription, exécute aussi `supabase/migration_schools_classes_insert.sql`
+> (déjà inclus dans `schema.sql` pour une base neuve).
+
+### Tester le multi-enfants avec des données de démo
+
+`supabase/seed_feed_demo.sql` crée un jeu de posts (national, école, 2
+classes différentes) pour tester le fil d'une famille avec des enfants dans
+deux écoles différentes, et vérifier l'affichage "· Pour \<prénom\>". Suis les
+étapes commentées dans le fichier (créer les comptes de démo via
+`/signup/...`, récupérer leurs id, coller-les dans le script).
 
 ### 2. Configurer le projet local
 
@@ -139,6 +151,9 @@ supabase/
   schema.sql                  tables, RLS, stockage
   migration_children.sql      table `children` (multi-enfants par famille)
   migration_presence.sql      suivi présence/notes + alertes automatiques
+  migration_schools_classes_insert.sql  autorise la création d'école/classe
+  seed.sql                    écoles/classes/liens d'écosystème de démo
+  seed_feed_demo.sql          posts de démo pour tester le multi-enfants
 public/
   manifest.json, sw.js   PWA et cache hors ligne
 ```
