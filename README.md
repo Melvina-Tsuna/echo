@@ -82,6 +82,17 @@ présent (aucune information n'est disponible uniquement en audio).
   ce qui représente plusieurs dizaines de Mo à télécharger et une intégration
   plus lourde à explorer après le MVP.
 
+## Voir le rendu
+
+Un compte Famille de démo (déjà seedé avec 2 enfants dans 2 écoles
+différentes, cf. `seed_feed_demo.sql`) permet de voir le fil multi-enfants
+sans rien créer :
+
+- **E-mail** : `parent1@gmail.com`
+- **Mot de passe** : `parent1test`
+
+Connecte-toi sur `/login` avec ces identifiants pour voir le rendu.
+
 ## Stack
 
 - **Next.js 14** (App Router, TypeScript) + **Tailwind CSS**
@@ -113,7 +124,7 @@ présent (aucune information n'est disponible uniquement en audio).
 classes différentes) pour tester le fil d'une famille avec des enfants dans
 deux écoles différentes, et vérifier l'affichage "· Pour \<prénom\>". Suis les
 étapes commentées dans le fichier (créer les comptes de démo via
-`/signup/...`, récupérer leurs id, coller-les dans le script).
+`/signup/...`, récupérer leurs id, colle-les dans le script).
 
 ### 2. Configurer le projet local
 
