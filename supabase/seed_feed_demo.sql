@@ -3,7 +3,7 @@
 -- classe pour CHACUNE des 3 écoles de seed.sql, pensé pour tester le
 -- multi-enfants.
 --
--- Une famille avec un enfant dans CM2 A (EPP Cotonou Centre) et un autre en
+-- Une famille avec un enfant dans CM1 B (EPP Cotonou Centre) et un autre en
 -- 6ème A (Collège Sainte-Rita) doit voir, dans son fil, les posts nationaux
 -- + ceux des écoles/classes de SES enfants uniquement (étiquetés avec le
 -- bon "· Pour <prénom>"), et surtout NE PAS voir les posts d'EPP Parakou I
@@ -25,7 +25,7 @@
 -- 2. /signup/etablissement → un compte École (idem, un seul suffit).
 -- 3. /signup/structure → un compte Structure (ex. "Ministère").
 -- 4. /signup/famille → un compte Famille avec 2 enfants :
---      - Enfant 1 → école "EPP Cotonou Centre", classe "CM2 A"
+--      - Enfant 1 → école "EPP Cotonou Centre", classe "CM1 B"
 --      - Enfant 2 → école "Collège Sainte-Rita", classe "6ème A"
 --    (aucun enfant à EPP Parakou I, volontairement)
 
@@ -48,7 +48,7 @@ declare
   epp_cotonou      uuid := '11111111-1111-1111-1111-111111111111';
   college_ste_rita uuid := '22222222-2222-2222-2222-222222222222';
   epp_parakou      uuid := '33333333-3333-3333-3333-333333333333';
-  cm2_a            uuid := 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
+  cm1_b            uuid := 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb';
   sixieme_a        uuid := 'cccccccc-cccc-cccc-cccc-cccccccccccc';
   ce2_a            uuid := 'dddddddd-dddd-dddd-dddd-dddddddddddd';
 begin
@@ -70,7 +70,7 @@ begin
   );
   insert into posts (author_id, scope, school_id, class_id, category, title, body)
   values (
-    v_teacher_id, 'class', epp_cotonou, cm2_a, 'devoir',
+    v_teacher_id, 'class', epp_cotonou, cm1_b, 'devoir',
     'Devoir de mathématiques pour vendredi',
     'Exercices 3 et 4 page 42 à faire pour vendredi. Pense à revoir les tables de multiplication.'
   );
@@ -115,7 +115,7 @@ end $$;
 -- Connecte-toi avec le compte Famille sur /feed : tu dois voir 5 posts
 -- (1 national + 2 pour l'enfant 1 à EPP Cotonou Centre + 2 pour l'enfant 2
 -- à Collège Sainte-Rita). "· Pour <prénom>" s'affiche seulement sur les 2
--- posts de PORTÉE CLASSE (devoir CM2 A, réunion 6ème A) — les posts école
+-- posts de PORTÉE CLASSE (devoir CM1 B, réunion 6ème A) — les posts école
 -- s'appliquent par nature à tous les enfants de cette école, donc pas
 -- besoin de préciser lequel. Aucun des 2 posts d'EPP Parakou I ne doit
 -- apparaître (pas d'enfant du foyer inscrit là-bas).
