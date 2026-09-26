@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
+import PasswordInput from "@/components/PasswordInput";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -53,14 +54,12 @@ export default function LoginPage() {
           <label htmlFor="password" className="block font-bold mb-1.5 text-sm">
             Mot de passe
           </label>
-          <input
+          <PasswordInput
             id="password"
-            type="password"
             required
             placeholder="Ton mot de passe"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full border-2 border-border bg-surface text-ink rounded-[10px] p-3 text-lg"
+            onChange={setPassword}
           />
         </div>
         {error && (
