@@ -53,6 +53,13 @@ export interface Profile {
   class_id: string | null;
 }
 
+export interface TeacherClass {
+  id: string;
+  teacher_id: string;
+  school_id: string;
+  class_id: string;
+}
+
 export interface Child {
   id: string;
   parent_id: string;

@@ -14,6 +14,7 @@ import {
   School,
   SchoolClass,
   SCHOOL_TYPE_LABELS,
+  TeacherClass,
   ZONE_LABELS,
 } from "@/lib/types";
 import PostCard from "@/components/PostCard";
@@ -91,15 +92,32 @@ export default function FeedPage() {
       setChildren(currentChildren);
     }
 
+    // Un enseignant peut intervenir dans plusieurs classes, potentiellement
+    // dans des écoles différentes : son périmètre vient de teacher_classes,
+    // pas de profiles.school_id/class_id (limité à une seule classe).
+    let teacherClasses: TeacherClass[] = [];
+    if (p.role === "teacher") {
+      const { data: tcData } = await supabase
+        .from("teacher_classes")
+        .select("*")
+        .eq("teacher_id", p.id);
+      teacherClasses = (tcData || []) as TeacherClass[];
+    }
+
     const schoolIds =
       p.role === "parent"
         ? [...new Set(currentChildren.map((c) => c.school_id).filter(Boolean))]
-        : p.school_id
-          ? [p.school_id]
+        : p.role === "teacher"
+          ? [...new Set(teacherClasses.map((tc) => tc.school_id))]
+          : p.school_id
+            ? [p.school_id]
+            : [];
+    const classIds =
+      p.role === "parent"
+        ? (currentChildren.map((c) => c.class_id).filter(Boolean) as string[])
+        : p.role === "teacher"
+          ? teacherClasses.map((tc) => tc.class_id)
           : [];
-    const classIds = currentChildren
-      .map((c) => c.class_id)
-      .filter(Boolean) as string[];
 
     if (p.role === "parent" && classIds.length > 0) {
       const { data: classesData } = await supabase
@@ -135,7 +153,7 @@ export default function FeedPage() {
       const filtered = (data as Post[]).filter(
         (post) =>
           post.scope !== "class" ||
-          (p.role === "parent"
+          (p.role === "parent" || p.role === "teacher"
             ? classIds.includes(post.class_id || "")
             : post.class_id === p.class_id)
       );

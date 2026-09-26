@@ -10,10 +10,11 @@ interface ChildDraft {
   fullName: string;
   schoolId: string;
   classId: string;
+  confirmed: boolean;
 }
 
 function emptyChild(): ChildDraft {
-  return { fullName: "", schoolId: "", classId: "" };
+  return { fullName: "", schoolId: "", classId: "", confirmed: false };
 }
 
 export default function SignupFamillePage() {
@@ -26,6 +27,9 @@ export default function SignupFamillePage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [children, setChildren] = useState<ChildDraft[]>([emptyChild()]);
+  const [childRowErrors, setChildRowErrors] = useState<Record<number, string>>(
+    {}
+  );
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -59,6 +63,32 @@ export default function SignupFamillePage() {
 
   function removeChild(index: number) {
     setChildren((prev) => prev.filter((_, i) => i !== index));
+    setChildRowErrors((prev) => {
+      const next: Record<number, string> = {};
+      Object.entries(prev).forEach(([i, msg]) => {
+        const n = Number(i);
+        if (n < index) next[n] = msg;
+        else if (n > index) next[n - 1] = msg;
+      });
+      return next;
+    });
+  }
+
+  function validateChildRow(index: number) {
+    const child = children[index];
+    if (!child.fullName || !child.schoolId || !child.classId) {
+      setChildRowErrors((prev) => ({
+        ...prev,
+        [index]: "Merci de renseigner le nom, l'école et la classe.",
+      }));
+      return;
+    }
+    setChildRowErrors((prev) => {
+      const next = { ...prev };
+      delete next[index];
+      return next;
+    });
+    updateChild(index, { confirmed: true });
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -67,6 +97,10 @@ export default function SignupFamillePage() {
 
     if (children.some((c) => !c.fullName || !c.schoolId || !c.classId)) {
       setError("Merci de renseigner le nom, l'école et la classe de chaque enfant.");
+      return;
+    }
+    if (children.some((c) => !c.confirmed)) {
+      setError("Merci de valider chaque enfant avant de créer le compte.");
       return;
     }
 
@@ -176,94 +210,148 @@ export default function SignupFamillePage() {
 
         <fieldset className="space-y-4">
           <legend className="font-bold mb-1 text-sm">Mes enfants</legend>
-          {children.map((child, index) => (
-            <div
-              key={index}
-              className="border-2 border-border rounded-[10px] p-4 space-y-3"
-            >
-              <div className="flex items-center justify-between">
-                <p className="font-bold text-sm">Enfant {index + 1}</p>
-                {children.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => removeChild(index)}
-                    className="text-danger font-bold text-sm underline"
-                  >
-                    Retirer
-                  </button>
-                )}
-              </div>
+          {children.map((child, index) => {
+            const schoolName = schools.find((s) => s.id === child.schoolId)?.name;
+            const className = (classesBySchool[child.schoolId] || []).find(
+              (c) => c.id === child.classId
+            )?.name;
 
-              <div>
-                <label
-                  htmlFor={`child-name-${index}`}
-                  className="block font-bold mb-1.5 text-sm"
+            if (child.confirmed) {
+              return (
+                <div
+                  key={index}
+                  className="border-2 border-brand-600 bg-brand-50 rounded-[10px] p-4 flex items-center justify-between gap-3"
                 >
-                  Nom de l&apos;enfant
-                </label>
-                <input
-                  id={`child-name-${index}`}
-                  required
-                  placeholder="ex. Prénom Nom"
-                  value={child.fullName}
-                  onChange={(e) => updateChild(index, { fullName: e.target.value })}
-                  className="w-full border-2 border-border bg-surface text-ink rounded-[10px] p-3 text-lg"
-                />
-              </div>
+                  <p className="m-0">
+                    <span className="font-bold">{child.fullName}</span>
+                    {schoolName && <span> — {schoolName}</span>}
+                    {className && <span>, {className}</span>}
+                  </p>
+                  <div className="flex gap-3 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => updateChild(index, { confirmed: false })}
+                      className="text-brand-700 font-semibold text-sm underline"
+                    >
+                      Modifier
+                    </button>
+                    {children.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => removeChild(index)}
+                        className="text-danger font-bold text-sm underline"
+                      >
+                        Retirer
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            }
 
-              <div>
-                <label
-                  htmlFor={`child-school-${index}`}
-                  className="block font-bold mb-1.5 text-sm"
-                >
-                  École
-                </label>
-                <select
-                  id={`child-school-${index}`}
-                  required
-                  value={child.schoolId}
-                  onChange={(e) => {
-                    updateChild(index, { schoolId: e.target.value, classId: "" });
-                    if (e.target.value) loadClasses(e.target.value);
-                  }}
-                  className="w-full border-2 border-border bg-surface text-ink rounded-[10px] p-3 text-lg"
-                >
-                  <option value="">— Choisir une école —</option>
-                  {schools.map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.name} ({s.city}, {SCHOOL_TYPE_LABELS[s.type]}
-                      {s.zone ? `, ${ZONE_LABELS[s.zone]}` : ""})
-                    </option>
-                  ))}
-                </select>
-              </div>
+            return (
+              <div
+                key={index}
+                className="border-2 border-border rounded-[10px] p-4 space-y-3"
+              >
+                <div className="flex items-center justify-between">
+                  <p className="font-bold text-sm">Enfant {index + 1}</p>
+                  {children.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => removeChild(index)}
+                      className="text-danger font-bold text-sm underline"
+                    >
+                      Retirer
+                    </button>
+                  )}
+                </div>
 
-              {child.schoolId && (
                 <div>
                   <label
-                    htmlFor={`child-class-${index}`}
+                    htmlFor={`child-name-${index}`}
                     className="block font-bold mb-1.5 text-sm"
                   >
-                    Classe
+                    Nom de l&apos;enfant
+                  </label>
+                  <input
+                    id={`child-name-${index}`}
+                    required
+                    placeholder="ex. Prénom Nom"
+                    value={child.fullName}
+                    onChange={(e) => updateChild(index, { fullName: e.target.value })}
+                    className="w-full border-2 border-border bg-surface text-ink rounded-[10px] p-3 text-lg"
+                  />
+                </div>
+
+                <div>
+                  <label
+                    htmlFor={`child-school-${index}`}
+                    className="block font-bold mb-1.5 text-sm"
+                  >
+                    École
                   </label>
                   <select
-                    id={`child-class-${index}`}
+                    id={`child-school-${index}`}
                     required
-                    value={child.classId}
-                    onChange={(e) => updateChild(index, { classId: e.target.value })}
+                    value={child.schoolId}
+                    onChange={(e) => {
+                      updateChild(index, { schoolId: e.target.value, classId: "" });
+                      if (e.target.value) loadClasses(e.target.value);
+                    }}
                     className="w-full border-2 border-border bg-surface text-ink rounded-[10px] p-3 text-lg"
                   >
-                    <option value="">— Choisir une classe —</option>
-                    {(classesBySchool[child.schoolId] || []).map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.name}
+                    <option value="">— Choisir une école —</option>
+                    {schools.map((s) => (
+                      <option key={s.id} value={s.id}>
+                        {s.name} ({s.city}, {SCHOOL_TYPE_LABELS[s.type]}
+                        {s.zone ? `, ${ZONE_LABELS[s.zone]}` : ""})
                       </option>
                     ))}
                   </select>
                 </div>
-              )}
-            </div>
-          ))}
+
+                {child.schoolId && (
+                  <div>
+                    <label
+                      htmlFor={`child-class-${index}`}
+                      className="block font-bold mb-1.5 text-sm"
+                    >
+                      Classe
+                    </label>
+                    <select
+                      id={`child-class-${index}`}
+                      required
+                      value={child.classId}
+                      onChange={(e) => updateChild(index, { classId: e.target.value })}
+                      className="w-full border-2 border-border bg-surface text-ink rounded-[10px] p-3 text-lg"
+                    >
+                      <option value="">— Choisir une classe —</option>
+                      {(classesBySchool[child.schoolId] || []).map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                {childRowErrors[index] && (
+                  <p role="alert" className="text-danger font-bold text-sm">
+                    {childRowErrors[index]}
+                  </p>
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => validateChildRow(index)}
+                  className="bg-brand-600 text-brand-ink font-bold rounded-[10px] px-4 py-2"
+                >
+                  Valider cet enfant
+                </button>
+              </div>
+            );
+          })}
 
           <button
             type="button"

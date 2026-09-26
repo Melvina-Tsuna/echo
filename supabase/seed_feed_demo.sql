@@ -19,9 +19,10 @@
 -- pour ne pas bricoler auth.users) :
 -- ------------------------------------------------------------
 -- 1. /signup/etablissement → un compte Enseignant (l'école/classe choisie
---    à l'inscription n'a pas d'importance : le script poste directement
---    pour chacune des 3 écoles via ce même compte, pour éviter de créer un
---    enseignant par école).
+--    à l'inscription n'a pas d'importance : le script rattache ce même
+--    compte aux 3 classes via teacher_classes, pour éviter de créer un
+--    enseignant par école. Ça permet aussi de tester le sélecteur de
+--    classe multi-écoles dans /track et /publish).
 -- 2. /signup/etablissement → un compte École (idem, un seul suffit).
 -- 3. /signup/structure → un compte Structure (ex. "Ministère").
 -- 4. /signup/famille → un compte Famille avec 2 enfants :
@@ -52,6 +53,14 @@ declare
   sixieme_a        uuid := 'cccccccc-cccc-cccc-cccc-cccccccccccc';
   ce2_a            uuid := 'dddddddd-dddd-dddd-dddd-dddddddddddd';
 begin
+
+  -- Rattache le compte Enseignant de démo aux 3 classes, pour pouvoir
+  -- tester le sélecteur multi-classes dans /track et /publish.
+  insert into teacher_classes (teacher_id, school_id, class_id) values
+    (v_teacher_id, epp_cotonou, cm1_b),
+    (v_teacher_id, college_ste_rita, sixieme_a),
+    (v_teacher_id, epp_parakou, ce2_a)
+  on conflict (teacher_id, class_id) do nothing;
 
   -- Post national (visible par tout le monde, y compris les 2 enfants)
   insert into posts (author_id, scope, school_id, class_id, category, title, body)

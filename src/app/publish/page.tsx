@@ -24,6 +24,9 @@ export default function PublishPage() {
   const [scope, setScope] = useState<Scope>("class");
   const [classes, setClasses] = useState<SchoolClass[]>([]);
   const [classId, setClassId] = useState("");
+  const [teacherClassOptions, setTeacherClassOptions] = useState<
+    { class_id: string; school_id: string; name: string }[]
+  >([]);
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -60,6 +63,31 @@ export default function PublishPage() {
           .eq("school_id", profileData.school_id)
           .order("name");
         setClasses(classesData || []);
+      }
+
+      if (profileData.role === "teacher") {
+        const { data: tcData } = await supabase
+          .from("teacher_classes")
+          .select("class_id, school_id")
+          .eq("teacher_id", profileData.id);
+
+        const classIds = (tcData || []).map((tc) => tc.class_id);
+        const { data: classesData } =
+          classIds.length > 0
+            ? await supabase.from("classes").select("*").in("id", classIds)
+            : { data: [] as SchoolClass[] };
+        const nameById: Record<string, string> = {};
+        (classesData || []).forEach((c) => {
+          nameById[c.id] = c.name;
+        });
+
+        setTeacherClassOptions(
+          (tcData || []).map((tc) => ({
+            class_id: tc.class_id,
+            school_id: tc.school_id,
+            name: nameById[tc.class_id] ?? "?",
+          }))
+        );
       }
 
       setChecking(false);
@@ -99,20 +127,25 @@ export default function PublishPage() {
       }
     }
 
-    if (scope === "class" && profile.role === "school" && !classId) {
+    if (
+      scope === "class" &&
+      (profile.role === "school" || profile.role === "teacher") &&
+      !classId
+    ) {
       setError("Merci de choisir la classe concernée.");
       setLoading(false);
       return;
     }
 
-    const targetClassId =
-      scope === "class"
-        ? profile.role === "school"
-          ? classId
-          : profile.class_id
-        : null;
+    const targetClassId = scope === "class" ? classId || profile.class_id : null;
 
-    const postSchoolId = scope !== "national" ? profile.school_id : null;
+    const postSchoolId =
+      scope === "national"
+        ? null
+        : profile.role === "teacher"
+          ? teacherClassOptions.find((tc) => tc.class_id === classId)
+              ?.school_id ?? null
+          : profile.school_id;
 
     const { error: insertError } = await supabase.from("posts").insert({
       author_id: profile.id,
@@ -213,6 +246,28 @@ export default function PublishPage() {
               {classes.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        {scope === "class" && profile?.role === "teacher" && (
+          <div>
+            <label htmlFor="teacher-class" className="block font-bold mb-1.5 text-sm">
+              Classe concernée
+            </label>
+            <select
+              id="teacher-class"
+              required
+              value={classId}
+              onChange={(e) => setClassId(e.target.value)}
+              className="w-full border-2 border-border bg-surface text-ink rounded-[10px] p-3 text-lg"
+            >
+              <option value="">— Choisir une classe —</option>
+              {teacherClassOptions.map((tc) => (
+                <option key={tc.class_id} value={tc.class_id}>
+                  {tc.name}
                 </option>
               ))}
             </select>
